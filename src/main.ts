@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { SwaggerHelper } from './common/helpers/swagger.helper';
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { AppConfig } from './configs/config.type';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -37,12 +39,12 @@ async function bootstrap() {
     },
   });
 
-  const port = 3000;
-  const host = 'localhost';
+  const configService = app.get(ConfigService)
+  const appConfig = configService.get<AppConfig>('app');
 
-  await app.listen(port, () => {
-    console.log(`Server is running on http://${host}:${port}`);
-    console.log(`Swagger is running on http://${host}:${port}/docs`);
+  await app.listen(appConfig.port, () => {
+    console.log(`Server is running on http://${appConfig.host}:${appConfig.port}`);
+    console.log(`Swagger is running on http://${appConfig.host}:${appConfig.port}/docs`);
   });
 }
 bootstrap();
