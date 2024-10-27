@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
-import { UsersModule } from './modules/users/users.module';
+import configuration from './configs/configuration';
 import { ArticlesModule } from './modules/articles/articles.module';
 import { CommentsModule } from './modules/comments/comments.module';
-import configuration from './configs/configuration';
+import { PostgresModule } from './modules/postgres/postgres.module';
+import { RedisModule } from './modules/redis/redis.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
@@ -12,9 +14,11 @@ import configuration from './configs/configuration';
       load: [configuration],
       isGlobal: true,
     }),
-    UsersModule, 
-    ArticlesModule, 
-    CommentsModule
+    PostgresModule,
+    RedisModule,
+    UsersModule,
+    ArticlesModule,
+    CommentsModule,
   ],
 })
 export class AppModule {}

@@ -1,9 +1,10 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { SwaggerHelper } from './common/helpers/swagger.helper';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
+import { AppModule } from './app.module';
+import { SwaggerHelper } from './common/helpers/swagger.helper';
 import { AppConfig } from './configs/config.type';
 
 async function bootstrap() {
@@ -21,13 +22,13 @@ async function bootstrap() {
     })
     .build();
 
-    app.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-        transform: true,
-        forbidNonWhitelisted: true,
-      }),
-    );
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerHelper.setDefaultResponses(document);
@@ -39,12 +40,16 @@ async function bootstrap() {
     },
   });
 
-  const configService = app.get(ConfigService)
+  const configService = app.get(ConfigService);
   const appConfig = configService.get<AppConfig>('app');
 
   await app.listen(appConfig.port, () => {
-    console.log(`Server is running on http://${appConfig.host}:${appConfig.port}`);
-    console.log(`Swagger is running on http://${appConfig.host}:${appConfig.port}/docs`);
+    console.log(
+      `Server is running on http://${appConfig.host}:${appConfig.port}`,
+    );
+    console.log(
+      `Swagger is running on http://${appConfig.host}:${appConfig.port}/docs`,
+    );
   });
 }
 bootstrap();
