@@ -1,10 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe } from '@nestjs/common';
-import { UsersService } from './services/users.service';
-import { UpdateUserDto } from './models/dto/req/update-user.req.dto';
-import { ApiBearerAuth, ApiConflictResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { UserResDto } from './models/dto/res/user.res.dto';
-import { UserListReqDto } from './models/dto/req/user-list.req.dto';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiConflictResponse, ApiTags } from '@nestjs/swagger';
+
 import { CreateUserReqDto } from './models/dto/req/create-user.req.dto';
+import { UpdateUserDto } from './models/dto/req/update-user.req.dto';
+import { UserListReqDto } from './models/dto/req/user-list.req.dto';
+import { UserResDto } from './models/dto/res/user.res.dto';
+import { UsersService } from './services/users.service';
 
 @ApiTags('Users')
 @Controller('users')
