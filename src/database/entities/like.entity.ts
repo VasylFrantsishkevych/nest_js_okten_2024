@@ -1,3 +1,4 @@
+import { ArticleID, LikeID, UserID } from 'src/common/types/entity-ids.type';
 import {
   Column,
   CreateDateColumn,
@@ -14,19 +15,19 @@ import { UserEntity } from './user.entity';
 @Entity(TableNameEnum.LIKES)
 export class LikeEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id: LikeID;
 
   @CreateDateColumn()
   created: Date;
 
   @Column()
-  user_id: string;
+  user_id: UserID;
   @ManyToOne(() => UserEntity, (entity) => entity.likes)
   @JoinColumn({ name: 'user_id' })
   user?: UserEntity;
 
   @Column()
-  article_id: string;
+  article_id: ArticleID;
   @ManyToOne(() => ArticleEntity, (entity) => entity.likes)
   @JoinColumn({ name: 'article_id' })
   article?: ArticleEntity;

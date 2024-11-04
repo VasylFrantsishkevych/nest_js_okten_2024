@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { ArticleID, UserID } from 'src/common/types/entity-ids.type';
 import { Config } from 'src/configs/config.type';
 import { UserRepository } from 'src/modules/repository/services/user.repository';
 
@@ -12,15 +13,20 @@ export class UsersService {
     private userRepository: UserRepository,
   ) {}
 
-  findOne(id: number) {
+  findOne(id: UserID) {
     return `This action returns a #${id} user`;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
+  update(id: UserID, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
+  remove(id: UserID) {
     return `This action removes a #${id} user`;
   }
+
+  public async checkAbilityToEditArticle(
+    userId: UserID,
+    articleId: ArticleID,
+  ) {}
 }

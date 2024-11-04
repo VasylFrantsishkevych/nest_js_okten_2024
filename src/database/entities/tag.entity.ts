@@ -1,3 +1,4 @@
+import { TagID } from 'src/common/types/entity-ids.type';
 import {
   Column,
   Entity,
@@ -13,7 +14,7 @@ import { CreateUpdateModel } from './models/create-updatemodel';
 @Entity(TableNameEnum.TAGS)
 export class TagEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id: TagID;
 
   @Column('text')
   name: string;

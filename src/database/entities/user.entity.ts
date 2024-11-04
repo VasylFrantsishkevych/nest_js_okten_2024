@@ -1,3 +1,4 @@
+import { UserID } from 'src/common/types/entity-ids.type';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { ArticleEntity } from './article.entity';
@@ -11,7 +12,7 @@ import { RefreshTokenEntity } from './refresh-token.entity';
 @Entity(TableNameEnum.USERS)
 export class UserEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id: UserID;
 
   @Column('text')
   name: string;

@@ -8,6 +8,7 @@ import {
   Patch,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiConflictResponse, ApiTags } from '@nestjs/swagger';
+import { UserID } from 'src/common/types/entity-ids.type';
 
 import { UpdateUserDto } from './models/dto/req/update-user.req.dto';
 import { UsersService } from './services/users.service';
@@ -29,20 +30,20 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiConflictResponse({ description: 'Conflict' })
   @Get(':id')
-  public async findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.usersService.findOne(+id);
+  public async findOne(@Param('id', ParseUUIDPipe) id: UserID) {
+    return this.usersService.findOne(id);
   }
 
   @Patch(':id')
   public async update(
-    @Param('id') id: string,
+    @Param('id') id: UserID,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.usersService.update(+id, updateUserDto);
+    return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')
-  public async remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  public async remove(@Param('id') id: UserID) {
+    return this.usersService.remove(id);
   }
 }

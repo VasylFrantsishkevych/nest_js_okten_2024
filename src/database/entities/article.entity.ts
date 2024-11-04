@@ -1,3 +1,4 @@
+import { ArticleID, UserID } from 'src/common/types/entity-ids.type';
 import {
   Column,
   Entity,
@@ -18,7 +19,7 @@ import { UserEntity } from './user.entity';
 @Entity(TableNameEnum.ARTICLES)
 export class ArticleEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id: ArticleID;
 
   @Column('text')
   title: string;
@@ -36,7 +37,7 @@ export class ArticleEntity extends CreateUpdateModel {
   comments?: CommentEntity[];
 
   @Column()
-  user_id: string;
+  user_id: UserID;
   @ManyToOne(() => UserEntity, (entity) => entity.articles)
   @JoinColumn({ name: 'user_id' })
   user?: UserEntity;
