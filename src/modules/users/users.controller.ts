@@ -7,9 +7,11 @@ import {
   ParseUUIDPipe,
   Patch,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiConflictResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UserID } from 'src/common/types/entity-ids.type';
 
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { IUserData } from '../auth/models/interfaces/user-data.interface';
 import { UpdateUserDto } from './models/dto/req/update-user.req.dto';
 import { UsersService } from './services/users.service';
 
@@ -18,32 +20,29 @@ import { UsersService } from './services/users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // @ApiForbiddenResponse({ description: 'Forbidden' })
-  // @ApiNotFoundResponse({ description: 'User not found' })
-  // @ApiConflictResponse({ description: 'Conflict' })
-  // @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  // @ApiOperation({
-  //   summary: 'Create user',
-  //   description: 'Create a new user',
-  //   deprecated: true,
-  // })
   @ApiBearerAuth()
-  @ApiConflictResponse({ description: 'Conflict' })
-  @Get(':id')
-  public async findOne(@Param('id', ParseUUIDPipe) id: UserID) {
-    return this.usersService.findOne(id);
+  @Get('me')
+  public async findMe(@CurrentUser() userData: IUserData) {
+    return await this.usersService.findMe(userData);
   }
 
-  @Patch(':id')
-  public async update(
-    @Param('id') id: UserID,
+  @ApiBearerAuth()
+  @Patch('me')
+  public async updateMe(
+    @CurrentUser() userData: IUserData,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.usersService.update(id, updateUserDto);
+    return await this.usersService.updateMe(userData, updateUserDto);
   }
 
-  @Delete(':id')
-  public async remove(@Param('id') id: UserID) {
-    return this.usersService.remove(id);
+  @ApiBearerAuth()
+  @Delete('me')
+  public async remove(@CurrentUser() userData: IUserData) {
+    return await this.usersService.removeMe(userData);
+  }
+
+  @Get(':userId')
+  public async findOne(@Param('userId', ParseUUIDPipe) userId: UserID) {
+    return await this.usersService.findOne(userId);
   }
 }

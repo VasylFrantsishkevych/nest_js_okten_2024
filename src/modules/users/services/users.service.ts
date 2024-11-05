@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ArticleID, UserID } from 'src/common/types/entity-ids.type';
+import { UserID } from 'src/common/types/entity-ids.type';
 import { Config } from 'src/configs/config.type';
+import { IUserData } from 'src/modules/auth/models/interfaces/user-data.interface';
 import { UserRepository } from 'src/modules/repository/services/user.repository';
 
 import { UpdateUserDto } from '../models/dto/req/update-user.req.dto';
@@ -13,20 +14,19 @@ export class UsersService {
     private userRepository: UserRepository,
   ) {}
 
-  findOne(id: UserID) {
-    return `This action returns a #${id} user`;
+  public async findMe(userData: IUserData) {
+    return `Is good ${userData.userId}`;
   }
 
-  update(id: UserID, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  public async updateMe(userData: IUserData, dto: UpdateUserDto) {
+    return `This action updates a #${userData.userId} user`;
   }
 
-  remove(id: UserID) {
-    return `This action removes a #${id} user`;
+  public async removeMe(userData: IUserData) {
+    return `This action removes a #${userData} user`;
   }
 
-  public async checkAbilityToEditArticle(
-    userId: UserID,
-    articleId: ArticleID,
-  ) {}
+  public async findOne(userId: UserID) {
+    return `This action returns a #${userId} user`;
+  }
 }

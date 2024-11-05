@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { UserMapper } from 'src/modules/users/services/user.mapper';
 
@@ -55,7 +55,42 @@ export class AuthService {
   }
 
   public async signIn(dto: SignInReqDto): Promise<any> {
-    // return await this.authService.create(dto);
+    // шукаємо користувача по емейлу
+    const user = await this.userRepository.findOne({
+      where: { email: dto.email },
+      select: ['id', 'password'],
+    });
+    // перевіряє чи користувач існує в базі
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    // перевіряє чи співпадають паролі по хеш сумі
+    const isPasswordValid = await bcrypt.compare(dto.password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException();
+    }
+    // створюємо пару токенів
+    const tokens = await this.tokenService.generateAuthTokens({
+      userId: user.id,
+      deviceId: dto.deviceId,
+    });
+    await Promise.all([
+      this.authCacheService.saveToken(
+        tokens.accessToken,
+        user.id,
+        dto.deviceId,
+      ),
+      this.refreshTokenRepository.save(
+        this.refreshTokenRepository.create({
+          user_id: user.id,
+          deviceId: dto.deviceId,
+          refreshToken: tokens.refreshToken,
+        }),
+      ),
+    ]);
+    const userEntity = await this.userRepository.findOneBy({ id: user.id });
+
+    return { user: UserMapper.toResDto(userEntity), tokens };
   }
 
   private async isEmailNotExistOrThrow(email: string) {
