@@ -1,26 +1,56 @@
 import { Injectable } from '@nestjs/common';
+import { In } from 'typeorm';
+
+import { ArticleID } from '../../../common/types/entity-ids.type';
+import { ArticleEntity } from '../../../database/entities/article.entity';
+import { TagEntity } from '../../../database/entities/tag.entity';
+import { IUserData } from '../../auth/models/interfaces/user-data.interface';
+import { ArticleRepository } from '../../repository/services/article.repository';
+import { TagRepository } from '../../repository/services/tag.repository';
 import { CreateArticleDto } from '../models/dto/req/create-article.dto';
 import { UpdateArticleDto } from '../models/dto/req/update-article.dto';
 
 @Injectable()
 export class ArticlesService {
-  create(dto: CreateArticleDto) {
-    return 'This action adds a new article';
+  constructor(
+    private readonly articleRepository: ArticleRepository,
+    private readonly tagRepository: TagRepository,
+  ) {}
+
+  public async create(
+    userData: IUserData,
+    dto: CreateArticleDto,
+  ): Promise<ArticleEntity> {
+    const tags = await this.createTags(dto.tags);
+
+    return await this.articleRepository.save(
+      this.articleRepository.create({ ...dto, tags, user_id: userData.userId }),
+    );
   }
 
-  findAll() {
-    return `This action returns all articles`;
+  public async findOne(articleId: ArticleID): Promise<ArticleEntity> {
+    return {} as any;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} article`;
+  public async update(
+    userData: IUserData,
+    articleId: ArticleID,
+    updateUserDto: UpdateArticleDto,
+  ): Promise<ArticleEntity> {
+    return {} as any;
   }
 
-  update(id: number, updateArticleDto: UpdateArticleDto) {
-    return `This action updates a #${id} article`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} article`;
+  private async createTags(tags: string[]): Promise<TagEntity[]> {
+    if (!tags || !tags.length) return [];
+    // дістаємо теги які в системі збережені
+    const entities = await this.tagRepository.findBy({ name: In(tags) });
+    const existingTags = entities.map((tag) => tag.name);
+    // визначаємо які теги потрібно додати, фільтруємо теги якщо їх немає в масиві то їх поторібно додати
+    const newTags = tags.filter((tag) => !existingTags.includes(tag));
+    // зберігаємо нові теги
+    const newEntities = await this.tagRepository.save(
+      newTags.map((tag) => this.tagRepository.create({ name: tag })),
+    );
+    return [...entities, ...newEntities];
   }
 }
