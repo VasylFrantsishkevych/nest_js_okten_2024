@@ -13,6 +13,8 @@ import { UserID } from 'src/common/types/entity-ids.type';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { IUserData } from '../auth/models/interfaces/user-data.interface';
 import { UpdateUserDto } from './models/dto/req/update-user.req.dto';
+import { UserBaseResDto } from './models/dto/res/user-base.res.dto';
+import { UserMapper } from './services/user.mapper';
 import { UsersService } from './services/users.service';
 
 @ApiTags('Users')
@@ -42,7 +44,10 @@ export class UsersController {
   }
 
   @Get(':userId')
-  public async findOne(@Param('userId', ParseUUIDPipe) userId: UserID) {
-    return await this.usersService.findOne(userId);
+  public async findOne(
+    @Param('userId', ParseUUIDPipe) userId: UserID,
+  ): Promise<UserBaseResDto> {
+    const result = await this.usersService.findOne(userId);
+    return UserMapper.toResDto(result);
   }
 }

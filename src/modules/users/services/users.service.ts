@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UserID } from 'src/common/types/entity-ids.type';
 import { Config } from 'src/configs/config.type';
+import { UserEntity } from 'src/database/entities/user.entity';
 import { IUserData } from 'src/modules/auth/models/interfaces/user-data.interface';
 import { UserRepository } from 'src/modules/repository/services/user.repository';
 
@@ -26,7 +27,7 @@ export class UsersService {
     return `This action removes a #${userData} user`;
   }
 
-  public async findOne(userId: UserID) {
-    return `This action returns a #${userId} user`;
+  public async findOne(userId: UserID): Promise<UserEntity> {
+    return await this.userRepository.findOneBy({ id: userId });
   }
 }
