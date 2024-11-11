@@ -11,6 +11,7 @@ export class UserMapper {
       email: user.email,
       bio: user.bio,
       image: user.image,
+      isFollowed: user.followings?.length > 0 || false,
     };
   }
   public static toIUserData(user: UserEntity, jwtPayload: IJwtPayload): any {

@@ -7,8 +7,12 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiFile } from 'src/common/decorators/api-file.decorator';
 import { UserID } from 'src/common/types/entity-ids.type';
 
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -45,6 +49,24 @@ export class UsersController {
   @Delete('me')
   public async removeMe(@CurrentUser() userData: IUserData): Promise<void> {
     await this.usersService.removeMe(userData);
+  }
+
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('avatar'))
+  @ApiFile('avatar', false, true)
+  @Post('me/avatar')
+  public async uploadAvatar(
+    @CurrentUser() userData: IUserData,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<void> {
+    await this.usersService.uploadAvatar(userData, file);
+  }
+
+  @ApiBearerAuth()
+  @Delete('me/avatar')
+  public async deleteAvatar(@CurrentUser() userData: IUserData): Promise<void> {
+    await this.usersService.deleteAvatar(userData);
   }
 
   @SkipAuth()

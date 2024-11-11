@@ -2,6 +2,8 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { UserID } from 'src/common/types/entity-ids.type';
 import { UserEntity } from 'src/database/entities/user.entity';
 import { IUserData } from 'src/modules/auth/models/interfaces/user-data.interface';
+import { ContentType } from 'src/modules/file-storage/enums/content-type.enum';
+import { FileStorageService } from 'src/modules/file-storage/services/file-storage.service';
 import { FollowRepository } from 'src/modules/repository/services/follow.repository';
 import { RefreshTokenRepository } from 'src/modules/repository/services/refresh-token.repository';
 import { UserRepository } from 'src/modules/repository/services/user.repository';
@@ -14,6 +16,7 @@ export class UsersService {
     private readonly userRepository: UserRepository,
     private readonly followRepository: FollowRepository,
     private readonly refreshTokenRepository: RefreshTokenRepository,
+    private readonly fileStorageService: FileStorageService,
   ) {}
 
   public async findMe(userData: IUserData): Promise<UserEntity> {
@@ -35,6 +38,30 @@ export class UsersService {
       { deleted: new Date() },
     );
     await this.refreshTokenRepository.delete({ user_id: userData.userId });
+  }
+
+  public async uploadAvatar(
+    userData: IUserData,
+    file: Express.Multer.File,
+  ): Promise<void> {
+    const user = await this.userRepository.findOneBy({ id: userData.userId });
+    const pathToFile = await this.fileStorageService.uploadFile(
+      file,
+      ContentType.IMAGE,
+      userData.userId,
+    );
+    if (user.image) {
+      await this.fileStorageService.deleteFile(user.image);
+    }
+    await this.userRepository.save({ ...user, image: pathToFile });
+  }
+
+  public async deleteAvatar(userData: IUserData): Promise<void> {
+    const user = await this.userRepository.findOneBy({ id: userData.userId });
+    if (user.image) {
+      await this.fileStorageService.deleteFile(user.image);
+      await this.userRepository.save({ ...user, image: null });
+    }
   }
 
   public async findOne(userId: UserID): Promise<UserEntity> {
