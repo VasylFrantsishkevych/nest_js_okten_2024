@@ -1,5 +1,11 @@
 import { UserID } from 'src/common/types/entity-ids.type';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { ArticleEntity } from './article.entity';
 import { CommentEntity } from './comment.entity';
@@ -14,6 +20,7 @@ export class UserEntity extends CreateUpdateModel {
   @PrimaryGeneratedColumn('uuid')
   id: UserID;
 
+  @Index()
   @Column('text')
   name: string;
 

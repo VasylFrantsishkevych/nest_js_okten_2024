@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { LikeRepository } from 'src/modules/repository/services/like.repository';
 import { In } from 'typeorm';
 
 import { ArticleID } from '../../../common/types/entity-ids.type';
@@ -16,6 +21,7 @@ export class ArticlesService {
   constructor(
     private readonly articleRepository: ArticleRepository,
     private readonly tagRepository: TagRepository,
+    private readonly likeRepository: LikeRepository,
   ) {}
 
   public async create(
@@ -49,6 +55,44 @@ export class ArticlesService {
     updateUserDto: UpdateArticleDto,
   ): Promise<ArticleEntity> {
     return {} as any;
+  }
+
+  public async like(userData: IUserData, articleId: ArticleID): Promise<void> {
+    const article = await this.articleRepository.findOneBy({ id: articleId });
+    if (!article) {
+      throw new NotFoundException('Article not found');
+    }
+    const like = await this.likeRepository.findOneBy({
+      user_id: userData.userId,
+      article_id: articleId,
+    });
+    if (like) {
+      throw new ConflictException('You already liked this article');
+    }
+    await this.likeRepository.save(
+      this.likeRepository.create({
+        user_id: userData.userId,
+        article_id: articleId,
+      }),
+    );
+  }
+
+  public async unlike(
+    userData: IUserData,
+    articleId: ArticleID,
+  ): Promise<void> {
+    const article = await this.articleRepository.findOneBy({ id: articleId });
+    if (!article) {
+      throw new NotFoundException('Article not found');
+    }
+    const like = await this.likeRepository.findOneBy({
+      user_id: userData.userId,
+      article_id: articleId,
+    });
+    if (!like) {
+      throw new ConflictException('You have not liked this article yet');
+    }
+    await this.likeRepository.remove(like);
   }
 
   private async createTags(tags: string[]): Promise<TagEntity[]> {
