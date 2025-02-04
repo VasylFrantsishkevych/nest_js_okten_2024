@@ -51,17 +51,17 @@ export class UsersController {
     await this.usersService.removeMe(userData);
   }
 
-  @ApiBearerAuth()
-  @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('avatar'))
-  @ApiFile('avatar', false, true)
-  @Post('me/avatar')
-  public async uploadAvatar(
-    @CurrentUser() userData: IUserData,
-    @UploadedFile() file: Express.Multer.File,
-  ): Promise<void> {
-    await this.usersService.uploadAvatar(userData, file);
-  }
+  // @ApiBearerAuth()
+  // @ApiConsumes('multipart/form-data')
+  // @UseInterceptors(FileInterceptor('avatar'))
+  // @ApiFile('avatar', false, true)
+  // @Post('me/avatar')
+  // public async uploadAvatar(
+  //   @CurrentUser() userData: IUserData,
+  //   @UploadedFile() file: Express.Multer.File,
+  // ): Promise<void> {
+  //   await this.usersService.uploadAvatar(userData, file);
+  // }
 
   @ApiBearerAuth()
   @Delete('me/avatar')

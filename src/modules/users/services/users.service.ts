@@ -40,21 +40,21 @@ export class UsersService {
     await this.refreshTokenRepository.delete({ user_id: userData.userId });
   }
 
-  public async uploadAvatar(
-    userData: IUserData,
-    file: Express.Multer.File,
-  ): Promise<void> {
-    const user = await this.userRepository.findOneBy({ id: userData.userId });
-    const pathToFile = await this.fileStorageService.uploadFile(
-      file,
-      ContentType.IMAGE,
-      userData.userId,
-    );
-    if (user.image) {
-      await this.fileStorageService.deleteFile(user.image);
-    }
-    await this.userRepository.save({ ...user, image: pathToFile });
-  }
+  // public async uploadAvatar(
+  //   userData: IUserData,
+  //   file: Express.Multer.File,
+  // ): Promise<void> {
+  //   const user = await this.userRepository.findOneBy({ id: userData.userId });
+  //   const pathToFile = await this.fileStorageService.uploadFile(
+  //     file,
+  //     ContentType.IMAGE,
+  //     userData.userId,
+  //   );
+  //   if (user.image) {
+  //     await this.fileStorageService.deleteFile(user.image);
+  //   }
+  //   await this.userRepository.save({ ...user, image: pathToFile });
+  // }
 
   public async deleteAvatar(userData: IUserData): Promise<void> {
     const user = await this.userRepository.findOneBy({ id: userData.userId });

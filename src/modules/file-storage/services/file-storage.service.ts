@@ -34,27 +34,27 @@ export class FileStorageService {
     });
   }
 
-  public async uploadFile(
-    file: Express.Multer.File,
-    itemType: ContentType,
-    itemId: string,
-  ): Promise<string> {
-    try {
-      const filePath = this.buildPath(itemType, itemId, file.originalname);
-      await this.s3Client.send(
-        new PutObjectCommand({
-          Bucket: this.awsConfig.bucketName,
-          Key: filePath,
-          Body: file.buffer,
-          ContentType: file.mimetype,
-          ACL: 'public-read',
-        }),
-      );
-      return filePath;
-    } catch (error) {
-      this.logger.error(error);
-    }
-  }
+  // public async uploadFile(
+  //   file: Express.Multer.File,
+  //   itemType: ContentType,
+  //   itemId: string,
+  // ): Promise<string> {
+  //   try {
+  //     const filePath = this.buildPath(itemType, itemId, file.originalname);
+  //     await this.s3Client.send(
+  //       new PutObjectCommand({
+  //         Bucket: this.awsConfig.bucketName,
+  //         Key: filePath,
+  //         Body: file.buffer,
+  //         ContentType: file.mimetype,
+  //         ACL: 'public-read',
+  //       }),
+  //     );
+  //     return filePath;
+  //   } catch (error) {
+  //     this.logger.error(error);
+  //   }
+  // }
 
   public async deleteFile(filePath: string): Promise<void> {
     try {
