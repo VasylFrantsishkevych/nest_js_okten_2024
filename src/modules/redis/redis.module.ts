@@ -14,7 +14,7 @@ import { RedisService } from './services/redis.service';
         const config = configService.get<RedisConfig>('redis');
         return new Redis({
           port: config.port,
-          host: config.host,
+          host: 'redis://red-cuh4n4dumphs739umbc0:6379',
           password: config.password,
         });
       },
